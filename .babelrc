@@ -1,8 +1,6 @@
 {
   "presets": [
-    ["env", {
-      "modules": false
-    }]
-  ],
-  "plugins": ["external-helpers"]
+    "env",
+    "stage-2"
+  ]
 }
