@@ -1,0 +1,9 @@
+[
+  { "name": "AFG", "value": 20 },
+  { "name": "PAK", "value": 40 },
+  { "name": "IRQ", "value": 80 },
+  { "name": "ALB", "value": 200 },
+  { "name": "MNG", "value": 100 },
+  { "name": "COL", "value": 60 },
+  { "name": "ARG", "value": 150 }
+]

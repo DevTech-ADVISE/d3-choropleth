@@ -12,6 +12,9 @@ export default {
   external: ['d3'],
   plugins: [
     resolve(),
+    json({
+      exclude: 'node_modules/**'
+    }),
     babel({
       exclude: 'node_modules/**' // only transpile source code
     })

@@ -1,0 +1,108 @@
+.choropleth-chart {
+  min-height:300px;
+  height: auto;
+  margin: auto;
+  width: 80%;
+  background-color: white;
+  overflow: hidden;
+
+  svg{
+    overflow: visible;
+    
+    path.country {
+      stroke: white;
+    }
+  } 
+  
+
+  .tooltip {
+    opacity: .8;
+
+    .tooltip-title {
+      color: white;
+      font-size: 1.7em;
+    }
+
+    .tooltip-text {
+      font-size: 1.3em;
+    }
+  }
+
+  .tooltip.hidden {
+    display: none;
+  }
+  .tooltip:before {
+    content: none;
+  }
+
+  .zoom-controls-container {
+    position: absolute;
+    right: 30px;
+    top: 10px;
+    color: #B60835;
+
+    .reset-button {
+      float: left;
+      margin-right: 15px;
+      background: white;
+      padding: 0px 4px;
+      cursor: pointer;
+      font-size: .9em;
+      margin-top: 5px;
+      line-height: 1.5em;
+      
+      &:hover {
+        background: #ededed;
+      }
+    }
+
+    .reset-button {
+      text-decoration: underline;
+      background-color: white;
+      opacity: .5;
+    }
+
+    .zoom-buttons {
+      float: right;
+      font-weight: 600;
+      font-size: 1.5em;
+      text-align: center;
+      
+
+      .zoom-button {
+        background: #dce8f8;
+        padding: 0px 10px;
+        line-height: 1.5em;
+        cursor: pointer;
+
+        &:hover {
+          background: #d2dce9;
+        }
+      }
+
+      #zoom-out {
+        border-top: 1px solid white;
+        border-bottom-left-radius: 2px;
+        border-bottom-right-radius: 2px;
+      }
+
+      #zoom-in {
+        border-top-left-radius: 2px;
+        border-top-right-radius: 2px;
+      }
+    }
+  }
+
+  // Legend
+  .legend {
+    .legend-title {
+      font-size: .8em;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .key-text {
+      font-size: .8em;
+    }
+  }
+}

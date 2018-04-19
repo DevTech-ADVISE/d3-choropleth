@@ -1,4 +1,4 @@
-export default function Choropleth (parentId) {
-  d3.select(parentId).text('hihi')
-  console.log(parentId)
-}
+import ChoroplethGenerator from './base/ChoroplethGenerator'
+import World from './ChoroplethTypes/World'
+
+export { World, ChoroplethGenerator }
