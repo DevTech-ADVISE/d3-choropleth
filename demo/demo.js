@@ -6,4 +6,3 @@ import data from './demoData.json'
 World('demo-chart')
   .data(data)
   .draw()
-console.log('j')

@@ -23,7 +23,7 @@ export default function(parentId) {
   let _colorMapper = (value) => '#ccc'
   let _keyAccessor = (datum) => (datum !== undefined) ? datum.name : undefined
   let _valueAccessor = (datum) => (datum !== undefined) ? datum.value : undefined
-  let _tooltipContent = (datum) => `${datum.name}<br/>${datum.value}`
+  let _tooltipContent = (datum, geoDatum) => `${geoDatum.properties.name}<br/>${datum.value || 'No Data'}`
   let _numberFormatter = (value) => Math.round(value)
   let _showLegend = true
   let _scaleType = 'quantize'
@@ -180,12 +180,12 @@ export default function(parentId) {
     return chart
   }
 
-  function getDatum(key) {
-    const datum = _data.find((d) => _keyAccessor(d) === mapGeoKeyToDataKey(key))
+  function getDatum(geoId) {
+    const datum = _data.find((d) => _keyAccessor(d) === mapGeoKeyToDataKey(geoId))
     if(!datum) {
-      const geoDatum = _topojson.find((d) => d.id === key)
+      const geoDatum = _topojson.find((d) => d.id === geoId)
       if(!geoDatum) {
-        return{ noDataFound: true, noGeoDataFound: true, name: key }
+        return{ noDataFound: true, noGeoDataFound: true, name: geoId }
       }
       return Object.assign({ noDataFound: true }, geoDatum)
     }
@@ -221,7 +221,7 @@ export default function(parentId) {
 
         tooltip.classed("hidden", false)
               .attr("style", "left:"+(mouse[0]+offsetL)+"px;top:"+(mouse[1]+offsetT)+"px")
-              .html(_tooltipContent(getDatum(d.id)));
+              .html(_tooltipContent(getDatum(d.id), d));
 
         })
         .on("mouseout",  function(d,i) {
