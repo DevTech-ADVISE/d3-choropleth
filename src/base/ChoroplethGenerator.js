@@ -197,6 +197,7 @@ export default function(parentId) {
   }
 
   chart.draw = function () {
+    d3.select(`#${parentId}`).classed('d3-choropleth-chart', true) // For default styles
     setupColorMapper()
     var country = g.selectAll(".country").data(_topojson);
 
