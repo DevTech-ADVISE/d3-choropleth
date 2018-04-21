@@ -5,7 +5,7 @@
   "main": "dist/Choropleth-bundle.js",
   "scripts": {
     "dev": "webpack-dev-server --config webpack.config.js --mode development",
-    "dist": "webpack --config webpack.config.dist.js",
+    "dist": "webpack --config webpack.config.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

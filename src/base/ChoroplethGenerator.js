@@ -12,10 +12,9 @@ export default function(parentId) {
       .scaleExtent([1, 9])
       .on("zoom", zoomAndPan);
 
-  var width = document.getElementById(parentId).offsetWidth
-  var parentHeight
-  var height = width / 2
-  let center = [width/2, height / 2]
+  var _width = document.getElementById(parentId).offsetWidth
+  var _height = _width / 2
+  let center = [_width/2, _height / 2]
 
   let projection,path,svg,g
   let _topojson, _data, _colorScale
@@ -30,42 +29,57 @@ export default function(parentId) {
 
   var tooltip
 
-  setup(width,height);
-
-  function setup(width,height){
-    projection = d3.geo.mercator()
-      .translate([(width/2), (height/2)])
-      .scale( width / 2 / Math.PI);
-
-    path = d3.geo.path().projection(projection);
-
+  function initialize(w, h) {
+    updateProjection(w, h)
     addZoomControls()
+
     const parentContainer = d3.select("#" + parentId)
-    parentContainer.style({ 'position': 'relative' })
+    parentContainer.style({ 'position': 'relative' }).classed('d3-choropleth-chart', true) // For default styles
     tooltip = parentContainer.append("div").attr("class", "tooltip hidden");
     svg = parentContainer.append("svg")
-        .attr("width", width)
-        .attr("height", height)
+        .attr("width", _width)
+        .attr("height", _height)
         .call(zoom)
         .on("wheel.zoom", null) // Don't zoom with mouse scroll
-        //.on("click", click)
-        .append("g");
 
     g = svg.append("g")
-          .on("click", click);
+
+    updateColorMapper()
+
+    if (_showLegend) {
+      addLegend()
+    }
   }
 
-  function setupColorMapper() {
+  function updateSvgSize(w, h) {
+    svg.attr("width", w)
+      .attr("height", h)
+  }
+
+  function updateLegendPosition(w, h) {
+    svg.select('g.legend')
+      .attr('transform', `translate(0, ${getContainerHeight() - 200})`)
+  }
+
+  function updateProjection() {
+    projection = d3.geo.mercator()
+    .translate([(_width/2), (_height/2)])
+    .scale( _width / 2 / Math.PI);
+
+    path = d3.geo.path().projection(projection);
+  }
+
+  function updateColorMapper() {
     _colorScale = new ColorScale(_data, _colorPalette.colors, _colorPalette.noDataColor, _valueAccessor, _scaleType)
     _colorMapper = (value) => _colorScale.getColorFor(value)
   }
 
-  function updateCurrentParentHeight() {
-    parentHeight = document.getElementById(parentId).offsetHeight
+  function getContainerHeight() {
+    return document.getElementById(parentId).offsetHeight
   }
 
   function addLegend() {
-    const legendBottomOffset = parentHeight - 200
+    const legendBottomOffset = getContainerHeight() - 200
     const legend = svg.append('g')
       .classed('legend', true)
       .attr('transform', `translate(${0}, ${legendBottomOffset})`)
@@ -126,6 +140,9 @@ export default function(parentId) {
       .classed('zoom-button', true)
       .attr('id', 'zoom-out')
       .text('-')
+
+    d3.selectAll('#' + parentId + ' .zoom-button').on('click', zoomClick)
+    d3.select('#' + parentId + ' .reset-button').on('click', resetZoom)
   }
 
   function getLegendValueRange(color) {
@@ -141,7 +158,7 @@ export default function(parentId) {
 
   chart.colorPalette = function(_) {
     _colorPalette = _
-    if(_data !== undefined) setupColorMapper()
+    if(_data !== undefined) updateColorMapper()
     return chart
   }
 
@@ -196,18 +213,24 @@ export default function(parentId) {
     return _valueAccessor(getDatum(key))
   }
 
-  chart.draw = function () {
-    d3.select(`#${parentId}`).classed('d3-choropleth-chart', true) // For default styles
-    setupColorMapper()
+  chart.draw = function (hasBeenInitialized) {
+    if(!hasBeenInitialized) {
+      initialize(_width, _height)
+    }
+
+    // Join: topojson to country nodes
     var country = g.selectAll(".country").data(_topojson);
 
+    // Enter: append the corresponding path nodes
     country.enter().insert("path")
         .attr("class", "country")
-        .attr("d", path)
         .attr("id", function(d,i) { return d.id; })
         .attr("title", function(d,i) { return d.properties.name; })
         .style("fill", function(d, i) { return _colorMapper(getDataValue(d.id)); });
     d3.selectAll(".country").style("stroke-width", .5 / zoom.scale());
+
+    // Update: set the country path, which can change when resize happens
+    country.attr("d", path)
 
     //offsets for tooltips
     var offsetL = 20;
@@ -228,35 +251,34 @@ export default function(parentId) {
           tooltip.classed("hidden", true);
         }); 
 
-    updateCurrentParentHeight()
-    if (_showLegend) {
-      addLegend()
-    }
+    resetZoom()
   }
 
   function redraw() {
     const parentContainer = d3.select("#" + parentId)
-    width = parentContainer.node().offsetWidth;
-    height = width / 2;
-    parentContainer.select('svg').remove();
-    setup(width,height);
-    chart.draw(_topojson);
+    _width = parentContainer.node().offsetWidth;
+    _height = _width / 2;
+    updateProjection(_width, _height)
+    updateSvgSize(_width, _height)
+    updateColorMapper()
+    updateLegendPosition()
+    chart.draw(true);
   }
 
   function zoomAndPan(zoomFromButton) {
     if(!zoomFromButton) {
       var t = d3.event.translate;
       var s = d3.event.scale; 
-      var h = height/4;
+      var h = _height/4;
 
       t[0] = Math.min(
-        (width/height)  * (s - 1), 
-        Math.max( width * (1 - s), t[0] )
+        (_width/_height)  * (s - 1), 
+        Math.max( _width * (1 - s), t[0] )
       );
 
       t[1] = Math.min(
         h * (s - 1) + h * s, 
-        Math.max(height  * (1 - s) - h * s, t[1])
+        Math.max(_height  * (1 - s) - h * s, t[1])
       );
 
       zoom.translate(t);
@@ -276,11 +298,6 @@ export default function(parentId) {
       throttleTimer = window.setTimeout(function() {
         redraw();
       }, 200);
-  }
-
-  //geo translation on mouse click in map
-  function click() {
-    var latlon = projection.invert(d3.mouse(this));
   }
 
   //function to add points and text to the map (used in plotting capitals)
@@ -328,7 +345,7 @@ export default function(parentId) {
           direction = 1,
           factor = 0.2,
           target_zoom = 1,
-          center = [width / 2, height / 2],
+          center = [_width / 2, _height / 2],
           extent = zoom.scaleExtent(),
           translate = zoom.translate(),
           translate0 = [],
@@ -355,7 +372,5 @@ export default function(parentId) {
     interpolateZoom([0, 0], 1)
   }
 
-  d3.selectAll('#' + parentId + ' .zoom-button').on('click', zoomClick)
-  d3.select('#' + parentId + ' .reset-button').on('click', resetZoom)
   return chart
 }
