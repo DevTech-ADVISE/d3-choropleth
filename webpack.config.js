@@ -37,5 +37,6 @@ module.exports = {
   },
   resolve: {
     extensions: ['*', '.js']
-  }
+  },
+  externals: ['d3']
 }
