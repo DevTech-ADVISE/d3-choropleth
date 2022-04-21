@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/BI/d3-choropleth.git"
+    "url": "https://github.com/DevTech-ADVISE/d3-choropleth.git"
   },
   "keywords": [
     "geo",
@@ -20,9 +20,9 @@
   "author": "BI",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/BI/d3-choropleth/issues"
+    "url": "https://github.com/DevTech-ADVISE/d3-choropleth/issues"
   },
-  "homepage": "https://github.com/BI/d3-choropleth#readme",
+  "homepage": "https://github.com/DevTech-ADVISE/d3-choropleth#readme",
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.4",
@@ -32,7 +32,7 @@
     "css-loader": "^0.28.11",
     "d3": "^3.5.17",
     "node-sass": "^4.8.3",
-    "qd-formatters": "git+https://github.com/QuickDash/qd-formatters.git",
+    "qd-formatters": "git+ssh://git@github.com:DevTech-ADVISE/qd-formatters.git",
     "sass-loader": "^7.0.1",
     "simple-statistics": "^5.3.1",
     "style-loader": "^0.21.0",
